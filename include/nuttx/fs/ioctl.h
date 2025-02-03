@@ -90,6 +90,7 @@
 #define _MATHIOBASE     (0x3200) /* MATH device ioctl commands */
 #define _MMCSDIOBASE    (0x3300) /* MMCSD device ioctl commands */
 #define _WLIOCBASE      (0x8b00) /* Wireless modules ioctl network commands */
+#define _PTPIOCBASE     (0x8c00) /* PTP commands */
 
 /* boardctl() commands share the same number space */
 
@@ -580,6 +581,11 @@
 
 #define _MMCSDIOCVALID(c)   (_IOC_TYPE(c) == _MMCSDIOBASE)
 #define _MMCSDIOC(nr)       _IOC(_MMCSDIOBASE, nr)
+
+/* PTP drivers ************************************************************/
+
+#define _PTPIOCVALID(c)   (_IOC_TYPE(c) == _PTPIOCBASE)
+#define _PTPIOC(nr)       _IOC(_PTPIOCBASE, nr)
 
 /* Wireless driver network ioctl definitions ********************************/
 

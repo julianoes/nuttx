@@ -108,6 +108,13 @@ config USBHOST_MSC
 	---help---
 		Enable support for the mass storage class driver.
 
+config USBHOST_PTP
+	bool "PTP support"
+	default n
+	depends on !BULK_DISABLE
+	---help---
+		Enable support for the PTP (picture transfer protocol) class driver.
+
 config USBHOST_MSC_NOTIFIER
 	bool "Support USB Mass Storage notifications"
 	default n
