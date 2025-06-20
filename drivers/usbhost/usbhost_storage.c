@@ -940,7 +940,7 @@ static void usbhost_destroy(FAR void *arg)
   /* Unregister the block driver */
 
   usbhost_mkdevname(priv, devname);
-  unregister_blockdriver(devname);
+  unregister_driver(devname);
 
   /* Release the device name used by this connection */
 
