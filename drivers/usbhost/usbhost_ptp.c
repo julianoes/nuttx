@@ -798,6 +798,7 @@ static int usbhost_ptp_close(FAR struct file *filep)
   FAR struct inode *inode = filep->f_inode;
   FAR struct usbhost_state_s *priv = inode->i_private;
   int ret;
+  irqstate_t flags;
 
   /* Get exclusive access to the device */
   ret = usbhost_takesem(&priv->exclsem);
@@ -811,6 +812,23 @@ static int usbhost_ptp_close(FAR struct file *filep)
     {
       priv->crefs--;
     }
+
+  flags = enter_critical_section();
+
+  /* Check if the USB PTP device is still connected.  If the
+   * device is not connected and the reference count just
+   * decremented to one, then unregister the device.
+   */
+
+  if (priv->crefs <= 1 && priv->disconnected)
+    {
+      /* Destroy the class instance */
+
+      DEBUGASSERT(priv->crefs == 1);
+      usbhost_destroy(priv);
+    }
+
+  leave_critical_section(flags);
 
   usbhost_givesem(&priv->exclsem);
   return OK;
