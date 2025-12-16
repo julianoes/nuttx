@@ -103,6 +103,11 @@
 #define GPIO_LED_RED   (GPIO_OUTPUT | GPIO_OPENDRAIN | GPIO_SPEED_50MHz | \
                         GPIO_OUTPUT_SET | GPIO_PORTC | GPIO_PIN2)
 
+/* W25N01GV NAND Flash Chip Select - PA4 (active low) */
+
+#define GPIO_W25N_CS   (GPIO_OUTPUT | GPIO_PUSHPULL | GPIO_SPEED_50MHz | \
+                        GPIO_OUTPUT_SET | GPIO_PORTA | GPIO_PIN4)
+
 /****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/

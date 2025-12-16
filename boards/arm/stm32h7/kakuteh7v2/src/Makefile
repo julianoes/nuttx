@@ -24,6 +24,10 @@ include $(TOPDIR)/Make.defs
 
 CSRCS = stm32_boot.c stm32_bringup.c
 
+ifeq ($(CONFIG_STM32H7_SPI1),y)
+CSRCS += stm32_spi.c
+endif
+
 ifeq ($(CONFIG_ARCH_LEDS),y)
 CSRCS += stm32_autoleds.c
 endif

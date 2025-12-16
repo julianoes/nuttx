@@ -22,6 +22,10 @@
 
 set(SRCS stm32_boot.c stm32_bringup.c)
 
+if(CONFIG_STM32H7_SPI1)
+  list(APPEND SRCS stm32_spi.c)
+endif()
+
 if(CONFIG_ARCH_LEDS)
   list(APPEND SRCS stm32_autoleds.c)
 endif()
