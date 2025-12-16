@@ -1870,6 +1870,13 @@ config ARCH_BOARD_WEACT_STM32H743
 	---help---
 		This is WeAct MiniSTM32H7xx (STM32H743VIT6) board.
 
+config ARCH_BOARD_KAKUTEH7V2
+	bool "Holybro Kakute H7 V2"
+	depends on ARCH_CHIP_STM32H743VI
+	select ARCH_HAVE_LEDS
+	---help---
+		Holybro Kakute H7 V2 flight controller board based on STM32H743VI.
+
 config ARCH_BOARD_WEACT_STM32H750
 	bool "WeAct Studio STM32H750"
 	depends on ARCH_CHIP_STM32H750VB
@@ -3657,6 +3664,7 @@ config ARCH_BOARD
 	default "nucleo-g071rb"                if ARCH_BOARD_NUCLEO_G071RB
 	default "nucleo-g0b1re"                if ARCH_BOARD_NUCLEO_G0B1RE
 	default "weact-stm32h743"              if ARCH_BOARD_WEACT_STM32H743
+	default "kakuteh7v2"                   if ARCH_BOARD_KAKUTEH7V2
 	default "weact-stm32h750"              if ARCH_BOARD_WEACT_STM32H750
 	default "nucleo-h743zi"                if ARCH_BOARD_NUCLEO_H743ZI
 	default "nucleo-h743zi2"               if ARCH_BOARD_NUCLEO_H743ZI2
@@ -4384,6 +4392,9 @@ source "boards/arm/stm32h7/stm32h747i-disco/Kconfig"
 endif
 if ARCH_BOARD_WEACT_STM32H743
 source "boards/arm/stm32h7/weact-stm32h743/Kconfig"
+endif
+if ARCH_BOARD_KAKUTEH7V2
+source "boards/arm/stm32h7/kakuteh7v2/Kconfig"
 endif
 if ARCH_BOARD_WEACT_STM32H750
 source "boards/arm/stm32h7/weact-stm32h750/Kconfig"
