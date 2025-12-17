@@ -129,4 +129,16 @@
 
 int stm32_bringup(void);
 
+/****************************************************************************
+ * Name: stm32_spidev_initialize
+ *
+ * Description:
+ *   Called to configure SPI chip select GPIO pins.
+ *
+ ****************************************************************************/
+
+#ifdef CONFIG_STM32H7_SPI1
+void stm32_spidev_initialize(void);
+#endif
+
 #endif /* __BOARDS_ARM_STM32H7_KAKUTEH7V2_SRC_KAKUTEH7V2_H */

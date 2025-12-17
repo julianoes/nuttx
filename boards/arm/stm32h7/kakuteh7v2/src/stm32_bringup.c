@@ -34,8 +34,9 @@
 
 #include <nuttx/fs/fs.h>
 
-#ifdef CONFIG_STM32H7_SPI1
+#ifdef CONFIG_MTD_W25N
 #include <nuttx/spi/spi.h>
+#include <nuttx/mtd/mtd.h>
 #include "stm32_spi.h"
 #endif
 
@@ -47,56 +48,46 @@
  * Private Functions
  ****************************************************************************/
 
-#ifdef CONFIG_STM32H7_SPI1
+#ifdef CONFIG_MTD_W25N
 /****************************************************************************
- * Name: w25n_jedec_id_test
+ * Name: stm32_w25n_initialize
  *
  * Description:
- *   Read and verify the JEDEC ID from the W25N01GV NAND flash chip.
- *   Expected: Manufacturer=0xEF (Winbond), Device=0xAA21
+ *   Initialize the W25N01GV NAND flash and register it as an MTD device.
  *
  ****************************************************************************/
 
-static void w25n_jedec_id_test(void)
+static int stm32_w25n_initialize(void)
 {
-  struct spi_dev_s *spi;
-  uint8_t manufacturer;
-  uint8_t device_hi;
-  uint8_t device_lo;
+  FAR struct spi_dev_s *spi;
+  FAR struct mtd_dev_s *mtd;
+  int ret;
 
   spi = stm32_spibus_initialize(1);
   if (!spi)
     {
       syslog(LOG_ERR, "W25N: Failed to initialize SPI1\n");
-      return;
+      return -ENODEV;
     }
 
-  SPI_LOCK(spi, true);
-  SPI_SETFREQUENCY(spi, 1000000);  /* 1 MHz for safety */
-  SPI_SETMODE(spi, SPIDEV_MODE0);
-  SPI_SETBITS(spi, 8);
-
-  SPI_SELECT(spi, SPIDEV_FLASH(0), true);
-  SPI_SEND(spi, 0x9f);             /* JEDEC ID command */
-  SPI_SEND(spi, 0x00);             /* Dummy byte */
-  manufacturer = SPI_SEND(spi, 0x00);
-  device_hi = SPI_SEND(spi, 0x00);
-  device_lo = SPI_SEND(spi, 0x00);
-  SPI_SELECT(spi, SPIDEV_FLASH(0), false);
-
-  SPI_LOCK(spi, false);
-
-  syslog(LOG_INFO, "W25N JEDEC ID: Mfg=0x%02x, Dev=0x%02x%02x\n",
-         manufacturer, device_hi, device_lo);
-
-  if (manufacturer == 0xef && device_hi == 0xaa && device_lo == 0x21)
+  mtd = w25n_initialize(spi, 0);
+  if (!mtd)
     {
-      syslog(LOG_INFO, "W25N01GV detected successfully!\n");
+      syslog(LOG_ERR, "W25N: Failed to initialize MTD driver\n");
+      return -ENODEV;
     }
-  else
+
+  /* Register MTD character device */
+
+  ret = register_mtddriver("/dev/mtd0", mtd, 0755, NULL);
+  if (ret < 0)
     {
-      syslog(LOG_WARNING, "W25N: Unexpected ID (expected EF AA21)\n");
+      syslog(LOG_ERR, "W25N: Failed to register MTD driver: %d\n", ret);
+      return ret;
     }
+
+  syslog(LOG_INFO, "W25N: MTD registered at /dev/mtd0\n");
+  return OK;
 }
 #endif
 
@@ -147,10 +138,14 @@ int stm32_bringup(void)
     }
 #endif /* CONFIG_FS_TMPFS */
 
-#ifdef CONFIG_STM32H7_SPI1
-  /* Test W25N01GV NAND flash JEDEC ID */
+#ifdef CONFIG_MTD_W25N
+  /* Initialize W25N01GV NAND flash MTD driver */
 
-  w25n_jedec_id_test();
+  ret = stm32_w25n_initialize();
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: stm32_w25n_initialize failed: %d\n", ret);
+    }
 #endif
 
   return OK;
