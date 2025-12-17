@@ -146,6 +146,23 @@ int stm32_bringup(void)
     {
       syslog(LOG_ERR, "ERROR: stm32_w25n_initialize failed: %d\n", ret);
     }
+#ifdef CONFIG_FS_LITTLEFS
+  else
+    {
+      /* Mount LittleFS on the NAND flash */
+
+      ret = nx_mount("/dev/mtd0", "/mnt", "littlefs", 0, "autoformat");
+      if (ret < 0)
+        {
+          syslog(LOG_ERR, "ERROR: Failed to mount littlefs at /mnt: %d\n",
+                 ret);
+        }
+      else
+        {
+          syslog(LOG_INFO, "LittleFS mounted at /mnt\n");
+        }
+    }
+#endif
 #endif
 
   return OK;
